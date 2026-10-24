@@ -29,7 +29,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django_mongodb_backend",
         "HOST": os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017"),
-        "NAME": os.getenv("MONGODB_NAME", "travel_agent"),
+        "NAME": os.getenv("MONGODB_NAME", "viato"),
         "CONN_MAX_AGE": 0,
     }
 }
