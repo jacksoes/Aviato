@@ -1,10 +1,10 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { FlightBookingCard, type FlightDetails } from './components/FlightBookingCard'
+import { FlightBookingCard, type FlightLookupInput, type FlightDetails } from './components/FlightBookingCard'
 import { HotelBookingCard, type HotelDetails } from './components/HotelBookingCard'
 import { OverviewCard } from './components/OverviewCard'
 
-const flight: FlightDetails = {
+const emptyFlight: FlightDetails = {
   airline: 'Airline not selected',
   flightNumber: '—',
   departure: 'Departure airport',
@@ -26,6 +26,18 @@ const hotel: HotelDetails = {
 
 function App() {
   const [apiStatus, setApiStatus] = useState('Connecting to API…')
+  const [flight, setFlight] = useState<FlightDetails>(emptyFlight)
+
+  async function lookupFlight(input: FlightLookupInput) {
+    const response = await fetch('/api/flights/lookup/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    })
+    const result = await response.json() as { flights?: FlightDetails[]; error?: string }
+    if (!response.ok) throw new Error(result.error || 'Flight lookup failed.')
+    return result.flights || []
+  }
 
   useEffect(() => {
     fetch('/api/ping/')
@@ -146,7 +158,7 @@ function App() {
         </div>
 
         <div className="booking-grid">
-          <FlightBookingCard flight={flight} />
+          <FlightBookingCard flight={flight} onLookup={lookupFlight} onSelectFlight={setFlight} />
           <HotelBookingCard hotel={hotel} />
         </div>
       </section>
